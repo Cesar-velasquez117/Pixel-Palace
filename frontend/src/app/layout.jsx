@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
             <h1>{metadata.title}</h1>
             <Link href="/catalog">Catalog</Link>
             <Link href="/cart">Cart</Link>
-            <Link href="/autentication/login">Login</Link>
+            <Link href="/auth/login">Login</Link>
           </nav>
         </header>
         <main>{children}</main>
