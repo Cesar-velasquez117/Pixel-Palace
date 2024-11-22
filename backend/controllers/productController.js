@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 
 // Get all products
 exports.getAll = async (req, res) => {
@@ -25,6 +26,9 @@ exports.getItById = async (req, res) => {
 exports.addProduct = async (req, res) => {
   try {
     const { name, description, price, stock, category, image } = req.body;
+    const isProductExist = await Product.findOne({ name });
+    if (isProductExist) return res.status(400).json({ message: 'Product already created'});
+
     const newProduct =  new Product({ name, description, price, stock, category, image });
     await newProduct.save();
     res.status(201).json(newProduct);
@@ -49,6 +53,13 @@ exports.deleteProduct = async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
     if (!deletedProduct) return res.status(404).json({ message: 'Product not found' });
+    
+    // Verify if the category ends up empty
+    const productsInCategory = await Product.find({ category: deletedProduct.category });
+    if (productsInCategory.lenght === 0) {
+      await Category.findByIdAndDelete(deletedProduct.category);
+    }
+    
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting product', error });
