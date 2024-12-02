@@ -1,5 +1,7 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const cloudinary = require('../config/cloudinary');
+const multer = require('multer');
 
 // Get all products
 exports.getAll = async (req, res) => {
@@ -63,5 +65,25 @@ exports.deleteProduct = async (req, res) => {
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting product', error });
+  }
+};
+
+// Upload a product image
+exports.uploadImage = async (req, res) => {
+  try {
+    const file = req.file;
+    const result = await cloudinary.uploader.upload_stream({
+      folder: 'pixel-palace/products'
+    }, (error, result) => {
+      if (error) {
+        return res.status(500).json({error});
+      }
+      res.status(200).json({ url: result.secure_url });
+    });
+
+    const stream = result;
+    stream.end(file.buffer);
+  } catch (error) {
+    res.status(500).json({ error: 'Error uplaoding image' });
   }
 };
