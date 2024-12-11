@@ -1,7 +1,6 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const cloudinary = require('../config/cloudinary');
-const multer = require('multer');
 
 // Get all products
 exports.getAll = async (req, res) => {

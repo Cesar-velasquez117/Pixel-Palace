@@ -31,23 +31,26 @@ export default function CreateProductPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
+    console.log("Uploading image")
 
     // Upload the image to Cloudinary
     const formDataImage = new FormData();
     formDataImage.append('file', formData.image);
     formDataImage.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+    console.log("Setting formData to upload it to Cloudinary");
 
     try {
       const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
         method: 'POST',
         body: formDataImage,
       });
+      console.log("Image uploaded to Cloudinary successfully");
 
       const data = await res.json();
       const imgeUrl = data.secure_url;
 
       // Save the product details to the database
-      const response = await fetch('/api/products', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -87,7 +90,7 @@ export default function CreateProductPage() {
         <InputField label="Stock" type="number" name="stock" placeholder="Enter the product stock" value={formData.stock} onChange={handleChange} />
         <div className="mb-4">
           <label className="block text-green-300 text-sm font-bold mb-2">Image</label>
-          <inpuy type="file" name="image" accept="image/*" onChange={handleImageChange} />
+          <input type="file" name="image" accept="image/*" onChange={handleImageChange} />
         </div>
         <Button text={uploading ? 'Uploading...' : 'Create product'} className="w-full mt-4" />
       </form>
